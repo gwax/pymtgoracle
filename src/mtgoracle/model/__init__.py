@@ -13,9 +13,9 @@ metadata = DeclarativeBase.metadata
 
 
 def init_model(engine):
-    metadata.create_all(bind=engine)
     DBSession.configure(bind=engine)
 
 
 from mtgoracle.model.card import Card
 from mtgoracle.model.cardset import CardSet
+from mtgoracle.model.cardprinting import CardPrinting
