@@ -1,4 +1,10 @@
-pymtgoracle
-===========
+# pymtgoracle
 
-Python libraries and CLI for MtG:Oracle
+Python library for MtG:Oracle
+
+
+## Dependencies
+
+* requests
+* BeautifulSoup
+* SQLAlchemy
