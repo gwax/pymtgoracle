@@ -17,15 +17,6 @@ class Card(DeclarativeBase):
     power = Column(Unicode(255))
     toughness = Column(Unicode(255))
 
-    rarity = Column(Unicode(255))
-    edition = Column(Unicode(255))
-    text = Column(Unicode(255))
-    flavor_text = Column(Unicode(255))
-    legalities = Column(Unicode(255))
-    rulings = Column(Unicode(255))
-    image = Column(Unicode(255))
-    otherpart = Column(Unicode(255))
-
     # {Special methods
     def __repr__(self):
         return ('<Card: %s>' % self.name).encode('utf-8')
