@@ -15,6 +15,7 @@ class CardPrinting(DeclarativeBase):
     setnumber = Column(Integer, primary_key=True)
     variant = Column(Integer, primary_key=True)
 
+    rarity = Column(Unicode(15))
     link = Column(Unicode(255))
     artist = Column(Unicode(255))
 
