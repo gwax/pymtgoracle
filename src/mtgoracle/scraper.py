@@ -1,8 +1,9 @@
-import requests
-from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulSoup, NavigableString
 from mtgoracle.model import Card, CardSet, CardPrinting, DBSession
-import string
+from urllib import urlencode
 import os.path
+import requests
+import string
 
 URL_BASE = 'http://magiccards.info'
 
@@ -16,27 +17,24 @@ def scrape_all():
     if os.path.exists(dbPath):
         os.rename(dbPath, dbbak)
     engine = get_engine(path=dbPath, echo=False)
-    metadata.create_all(bind=engine)  #@UndefinedVariable @IgnorePep8
+    metadata.create_all(bind=engine)  # @UndefinedVariable @IgnorePep8
     DBSession.configure(bind=engine)
-    setdicts = scrape_setdicts()[:5]
+    setdicts = scrape_setdicts()
     for setdict in setdicts:
         cset = CardSet(**setdict)
         DBSession.add(cset)
         print cset
-        carddicts = carddicts_from_setlink(cset.link)
-        for carddict in carddicts:
+        cardtuples = cardandprints_from_setcode(cset.code)
+        for carddict, printdict in cardtuples:
             card = DBSession.query(Card).\
-                    filter_by(name=carddict['name']).first()
+                   filter_by(name=carddict['name']).first()
             if card is None:
-                card = Card(name=carddict['name'])
+                card = Card(**carddict)
                 DBSession.add(card)
                 print card
-            printing = CardPrinting(setcode=cset.code,
-                                    cardname=card.name,
-                                    setnumber=carddict['setnum'],
-                                    variant=carddict['variant'])
-            printing.link = carddict['link']
-            printing.artist = carddict['artist']
+            printing = CardPrinting(**printdict)
+            printing.setcode = cset.code
+            printing.cardname = card.name
             DBSession.add(printing)
             print printing
     DBSession.commit()
@@ -61,31 +59,67 @@ def setdict_from_setlink(setlink):
     return setdict
 
 
-def carddicts_from_setlink(setlink):
-    req = requests.get(URL_BASE + setlink)
+def cardandprints_from_setcode(setcode):
+    querymap = {'q':'++e:' + setcode + '/en',
+                'v':'spoiler',
+                's':'issue'}
+    spoilerlink = '/query?' + urlencode(querymap)
+    req = requests.get(URL_BASE + spoilerlink)
     soup = BeautifulSoup(req.content)
-    card_table = soup.find(text='&#8470;').findParent('table')
-    card_rows = card_table.findAll('tr')
-    card_header = [h.text for h in card_rows[0].findAll('th')]
-    card_rows = card_rows[1:]
-    return [carddict_from_row(row, card_header) for row in card_rows]
+    cspans = soup.findAll('span')
+    return [card_and_printing_from_span(csp) for csp in cspans]
 
 
-def carddict_from_row(card_row, card_header):
-    raw_card = dict(zip(card_header, card_row.findAll('td')))
-    new_card = {
-        'name': raw_card['Card name'].text,
-        'link': raw_card['Card name'].find('a')['href'],
-        'artist': raw_card['Artist'].text
-        }
-    numcol = raw_card['&#8470;'].text
-    if numcol[-1] in string.lowercase:
-        new_card['variant'] = string.lowercase.index(numcol[-1])
-        numcol = numcol[:-1]
+def card_and_printing_from_span(cspan):
+    cardlink = cspan.find('a')['href']
+    numstr = cardlink.split('/')[-1].replace('.html', '')
+    if numstr[-1] in string.lowercase:
+        variant = string.lowercase.index(numstr[-1])
+        numstr = numstr[:-1]
     else:
-        new_card['variant'] = -1
-    new_card['setnum'] = int(numcol)
-    return new_card
+        variant = -1
+    rulesline = cspan.findNextSibling('p', {'class': 'ctext'})
+    typecostline = rulesline.findPreviousSibling('p')
+    rarityline = typecostline.findPreviousSibling('p')
+    flavorline = rulesline.findNextSibling('p')
+    artline = flavorline.findNextSibling('p')
+    printing = {'link': cardlink,
+            'number': int(numstr),
+            'variant': variant,
+            'rarity': unicode(rarityline.findNext('i').text) if rarityline else u'Special',
+            'flavor': unicode(flavorline.text),
+            'artist': unicode(artline.text).replace('Illus. ', '')}
+    rules = [rl for rl in rulesline.contents if isinstance(rl, NavigableString)]
+    typeline, costline = [l.strip() for l in typecostline.text.split(',')]
+    types = typeline.split()
+    if '/' in types[-1]:
+        powr, tgh = types[-1].split('/')
+        types = types[:-1]
+    else:
+        powr, tgh = None, None
+    if u'\u2014' in types:
+        i = types.index(u'\u2014')
+        suptypes = types[:i]
+        subtypes = types[i + 1:]
+    else:
+        suptypes = types
+        subtypes = []
+    if costline == u'':
+        cost, cmc = ('', 0)
+    elif '(' in costline:
+        cost, cmc = costline.split()
+        cmc = int(cmc.strip('()'))
+    else:
+        cost, cmc = (costline, 0)
+    card = {'name': unicode(cspan.text),
+            'rules': [unicode(r) for r in rules],
+            'power': unicode(powr),
+            'toughness':unicode(tgh),
+            'types': [unicode(t) for t in suptypes],
+            'subtypes': [unicode(t) for t in subtypes],
+            'cost':unicode(cost),
+            'cmc':cmc}
+    return card, printing
 
 
 if __name__ == '__main__':
