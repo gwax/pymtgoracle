@@ -12,12 +12,13 @@ class CardPrinting(DeclarativeBase):
     cardname = Column(Unicode(255), ForeignKey('mtgoracle_cards.name',
                       onupdate='CASCADE', ondelete='CASCADE'),
                       primary_key=True)
-    setnumber = Column(Integer, primary_key=True)
+    number = Column(Integer, primary_key=True)
     variant = Column(Integer, primary_key=True)
 
     rarity = Column(Unicode(15))
     link = Column(Unicode(255))
     artist = Column(Unicode(255))
+    flavor = Column(Unicode(255))
 
     card = relationship('Card', backref='printings')
     set = relationship('CardSet', backref=backref('printlist',
@@ -25,8 +26,11 @@ class CardPrinting(DeclarativeBase):
 
     # {Special methods
     def __repr__(self):
-        return ('<CardPrinting: %s-%d: %s>' %
-                (self.setcode, self.setnumber, self.cardname)).encode('utf-8')
+        return ('<CardPrinting: %s-%d%s: %s>' % 
+                (self.setcode,
+                 self.number,
+                 '.' + str(self.variant) if self.variant > 0 else '',
+                 self.cardname)).encode('utf-8')
 
     def __unicode__(self):
         return unicode(self.name)
