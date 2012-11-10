@@ -1,5 +1,5 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
-from mtgoracle.model import Card, CardSet, CardPrinting, DBSession
+from mtgoracle.model import Card, CardSet, CardPrinting, DBSession, CardType, CardSubtype
 from urllib import urlencode
 import os.path
 import requests
@@ -29,9 +29,27 @@ def scrape_all():
             card = DBSession.query(Card).\
                    filter_by(name=carddict['name']).first()
             if card is None:
+                typestrs = carddict.pop('types')
+                stypestrs = carddict.pop('subtypes')
                 card = Card(**carddict)
                 DBSession.add(card)
                 print card
+                for typestr in typestrs:
+                    ctype = DBSession.query(CardType).\
+                            filter_by(name=typestr).first()
+                    if ctype is None:
+                        ctype = CardType(name=typestr)
+                        DBSession.add(ctype)
+                        print ctype
+                    card.types.append(ctype)
+                for stypestr in stypestrs:
+                    cstype = DBSession.query(CardSubtype).\
+                                filter_by(name=stypestr).first()
+                    if cstype is None:
+                        cstype = CardSubtype(name=stypestr)
+                        DBSession.add(cstype)
+                        print cstype
+                    card.subtypes.append(cstype)
             printing = CardPrinting(**printdict)
             printing.setcode = cset.code
             printing.cardname = card.name
@@ -89,7 +107,7 @@ def card_and_printing_from_span(cspan):
             'rarity': unicode(rarityline.findNext('i').text) if rarityline else u'Special',
             'flavor': unicode(flavorline.text),
             'artist': unicode(artline.text).replace('Illus. ', '')}
-    rules = [rl for rl in rulesline.contents if isinstance(rl, NavigableString)]
+    rules = [rl for rl in rulesline.find('b').contents if isinstance(rl, NavigableString)]
     typeline, costline = [l.strip() for l in typecostline.text.split(',')]
     types = typeline.split()
     if '/' in types[-1]:
@@ -112,7 +130,7 @@ def card_and_printing_from_span(cspan):
     else:
         cost, cmc = (costline, 0)
     card = {'name': unicode(cspan.text),
-            'rules': [unicode(r) for r in rules],
+            'rules': unicode('\n'.join(rules)),
             'power': unicode(powr),
             'toughness':unicode(tgh),
             'types': [unicode(t) for t in suptypes],

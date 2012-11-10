@@ -1,21 +1,39 @@
-from sqlalchemy import Column, Unicode, PickleType, Integer
-from mtgoracle.model import DeclarativeBase
+from sqlalchemy import Column, Unicode, Integer, Text
+from sqlalchemy.orm import relationship
+from mtgoracle.model import DeclarativeBase, DBSession
+from mtgoracle.model.cardtypes import CardSubtype, CardType
 
 
 class Card(DeclarativeBase):
     __tablename__ = 'mtgoracle_cards'
-    name = Column(Unicode(255), primary_key=True, unique=True, nullable=False)
+    name = Column(Unicode(127), primary_key=True, unique=True, nullable=False)
     cmc = Column(Integer)
     cost = Column(Unicode(31))
-    types = Column(PickleType)
-    subtypes = Column(PickleType)
-    rules = Column(PickleType)
+    rules = Column(Text(convert_unicode=True))
     power = Column(Unicode(5))
     toughness = Column(Unicode(5))
+    
+    types = relationship('CardType', secondary='mtgoracle_card_types')
+    subtypes = relationship('CardSubtype', secondary='mtgoracle_card_subtypes')
 
-    # {Special methods
+    #{ Special methods
     def __repr__(self):
         return ('<Card: %s>' % self.name).encode('utf-8')
 
     def __unicode__(self):
         return unicode(self.name)
+
+    #{ Search options
+    @staticmethod
+    def by_name(namestr):
+        return DBSession.query(Card).filter_by(name=namestr).first()
+
+    @staticmethod
+    def with_type(typestr):
+        return DBSession.query(Card).\
+                filter(Card.types.any(CardType.name == typestr)).all()
+                
+    @staticmethod
+    def with_subtype(stypestr):
+        return DBSession.query(Card).\
+                filter(Card.subtypes.any(CardSubtype.name==stypestr)).all()

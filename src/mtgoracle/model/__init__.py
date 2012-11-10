@@ -19,3 +19,4 @@ def init_model(engine):
 from mtgoracle.model.card import Card
 from mtgoracle.model.cardset import CardSet
 from mtgoracle.model.cardprinting import CardPrinting
+from mtgoracle.model.cardtypes import CardType, CardSubtype
