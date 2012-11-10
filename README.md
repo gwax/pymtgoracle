@@ -19,8 +19,8 @@ http://magiccards.info
 
 This can be accomplished by firing up python and issuing the following commands:
 
-> from mtgoracle.scraper import scrape_all
-> scrape_all()
+    >>> from mtgoracle.scraper import scrape_all
+    >>> scrape_all()
 
 This will pull down everything that magiccards.info knows and store it in a
 local SQL database. The database is configured in mtgoracle/dbengine.py and
