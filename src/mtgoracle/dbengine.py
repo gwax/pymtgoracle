@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine
 from os.path import expanduser, join, split
+from sqlalchemy import create_engine
 
 
 dbPath = '~/mtgoracle.sqlite'

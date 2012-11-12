@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Unicode, DateTime
-from sqlalchemy.ext.associationproxy import association_proxy
 from mtgoracle.model import DeclarativeBase
 from mtgoracle.model.cardprinting import CardPrinting
+from sqlalchemy import Column, Unicode, DateTime
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class CardSet(DeclarativeBase):

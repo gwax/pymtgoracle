@@ -1,7 +1,7 @@
+from mtgoracle.model import DeclarativeBase
 from sqlalchemy import Column, Unicode, ForeignKey, Integer
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from mtgoracle.model import DeclarativeBase
 
 
 class CardPrinting(DeclarativeBase):
@@ -26,7 +26,7 @@ class CardPrinting(DeclarativeBase):
 
     # {Special methods
     def __repr__(self):
-        return ('<CardPrinting: %s-%d%s: %s>' % 
+        return ('<CardPrinting: %s-%d%s: %s>' %
                 (self.setcode,
                  self.number,
                  '.' + str(self.variant) if self.variant > 0 else '',

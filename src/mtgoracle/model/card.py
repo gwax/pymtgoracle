@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Unicode, Integer, Text
-from sqlalchemy.orm import relationship
 from mtgoracle.model import DeclarativeBase, DBSession
 from mtgoracle.model.cardtypes import CardSubtype, CardType
+from sqlalchemy import Column, Unicode, Integer, Text
+from sqlalchemy.orm import relationship
 
 
 class Card(DeclarativeBase):
