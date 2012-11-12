@@ -12,18 +12,19 @@ class Card(DeclarativeBase):
     rules = Column(Text(convert_unicode=True))
     power = Column(Unicode(5))
     toughness = Column(Unicode(5))
-    
+    loyalty = Column(Integer)
+
     types = relationship('CardType', secondary='mtgoracle_card_types')
     subtypes = relationship('CardSubtype', secondary='mtgoracle_card_subtypes')
 
-    #{ Special methods
+    # { Special methods
     def __repr__(self):
         return ('<Card: %s>' % self.name).encode('utf-8')
 
     def __unicode__(self):
         return unicode(self.name)
 
-    #{ Search options
+    # { Search options
     @staticmethod
     def by_name(namestr):
         return DBSession.query(Card).filter_by(name=namestr).first()
@@ -32,8 +33,8 @@ class Card(DeclarativeBase):
     def with_type(typestr):
         return DBSession.query(Card).\
                 filter(Card.types.any(CardType.name == typestr)).all()
-                
+
     @staticmethod
     def with_subtype(stypestr):
         return DBSession.query(Card).\
-                filter(Card.subtypes.any(CardSubtype.name==stypestr)).all()
+                filter(Card.subtypes.any(CardSubtype.name == stypestr)).all()

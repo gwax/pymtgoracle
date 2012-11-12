@@ -1,5 +1,6 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
-from mtgoracle.model import Card, CardSet, CardPrinting, DBSession, CardType, CardSubtype
+from mtgoracle.model import Card, CardSet, CardPrinting, DBSession, \
+                            CardType, CardSubtype
 from urllib import urlencode
 import os.path
 import requests
@@ -78,9 +79,9 @@ def setdict_from_setlink(setlink):
 
 
 def cardandprints_from_setcode(setcode):
-    querymap = {'q':'++e:' + setcode + '/en',
-                'v':'spoiler',
-                's':'issue'}
+    querymap = {'q': '++e:' + setcode + '/en',
+                'v': 'spoiler',
+                's': 'issue'}
     spoilerlink = '/query?' + urlencode(querymap)
     req = requests.get(URL_BASE + spoilerlink)
     soup = BeautifulSoup(req.content)
@@ -104,10 +105,12 @@ def card_and_printing_from_span(cspan):
     printing = {'link': cardlink,
             'number': int(numstr),
             'variant': variant,
-            'rarity': unicode(rarityline.findNext('i').text) if rarityline else u'Special',
+            'rarity': unicode(rarityline.findNext('i').text) if
+                                rarityline else u'Special',
             'flavor': unicode(flavorline.text),
             'artist': unicode(artline.text).replace('Illus. ', '')}
-    rules = [rl for rl in rulesline.find('b').contents if isinstance(rl, NavigableString)]
+    rules = [rl for rl in rulesline.find('b').contents if
+             isinstance(rl, NavigableString)]
     typeline, costline = [l.strip() for l in typecostline.text.split(',')]
     types = typeline.split()
     if '/' in types[-1]:
@@ -122,6 +125,12 @@ def card_and_printing_from_span(cspan):
     else:
         suptypes = types
         subtypes = []
+    if u'(Loyalty:' in subtypes:
+        i = subtypes.index(u'(Loyalty:')
+        loyalty = int(subtypes[i + 1].strip(')'))
+        subtypes = subtypes[:i]
+    else:
+        loyalty = None
     if costline == u'':
         cost, cmc = ('', 0)
     elif '(' in costline:
@@ -131,12 +140,13 @@ def card_and_printing_from_span(cspan):
         cost, cmc = (costline, 0)
     card = {'name': unicode(cspan.text),
             'rules': unicode('\n'.join(rules)),
-            'power': unicode(powr),
-            'toughness':unicode(tgh),
+            'power': unicode(powr) if powr is not None else None,
+            'toughness': unicode(tgh) if tgh is not None else None,
             'types': [unicode(t) for t in suptypes],
             'subtypes': [unicode(t) for t in subtypes],
-            'cost':unicode(cost),
-            'cmc':cmc}
+            'cost': unicode(cost),
+            'cmc': cmc,
+            'loyalty': loyalty}
     return card, printing
 
 
