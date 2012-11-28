@@ -90,6 +90,7 @@ def cardandprints_from_setcode(setcode):
 
 
 def card_and_printing_from_span(cspan):
+    name = cspan.text
     cardlink = cspan.find('a')['href']
     numstr = cardlink.split('/')[-1].replace('.html', '')
     if numstr[-1] in string.lowercase:
@@ -118,13 +119,29 @@ def card_and_printing_from_span(cspan):
         types = types[:-1]
     else:
         powr, tgh = None, None
-    if u'\u2014' in types:
+    if name == u'1996 World Champion':
+        suptypes = [u'Legendary', u'Creature']
+        subtypes = []
+    elif name == u'Shichifukujin Dragon':
+        suptypes = [u'Creature']
+        subtypes = [u'Dragon']
+    elif name == u'Old Fogey':
+        suptypes = ['Creature']
+        subtypes = ['Dinosaur']
+    elif u'Enchant' in types:
+        suptypes = [u'Enchantment']
+        subtypes = [u'Aura']
+    elif u'\u2014' in types:
         i = types.index(u'\u2014')
         suptypes = types[:i]
         subtypes = types[i + 1:]
     else:
         suptypes = types
         subtypes = []
+    if u'Legend' in subtypes:
+        i = subtypes.index(u'Legend')
+        subtypes.pop(i)
+        suptypes.append(u'Legendary')
     if u'(Loyalty:' in subtypes:
         i = subtypes.index(u'(Loyalty:')
         loyalty = int(subtypes[i + 1].strip(')'))
@@ -138,7 +155,7 @@ def card_and_printing_from_span(cspan):
         cmc = int(cmc.strip('()'))
     else:
         cost, cmc = (costline, 0)
-    card = {'name': unicode(cspan.text),
+    card = {'name': unicode(name),
             'rules': unicode('\n'.join(rules)),
             'power': unicode(powr) if powr is not None else None,
             'toughness': unicode(tgh) if tgh is not None else None,
