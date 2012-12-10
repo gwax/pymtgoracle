@@ -1,6 +1,6 @@
 from mtgoracle.model import DeclarativeBase, DBSession
 from mtgoracle.model.cardtypes import CardSubtype, CardType
-from sqlalchemy import Column, Unicode, Integer, Text
+from sqlalchemy import Column, Unicode, Integer, Text, Boolean
 from sqlalchemy.orm import relationship
 
 
@@ -13,6 +13,7 @@ class Card(DeclarativeBase):
     power = Column(Unicode(5))
     toughness = Column(Unicode(5))
     loyalty = Column(Integer)
+    legendary = Column(Boolean, default=False)
 
     types = relationship('CardType', secondary='mtgoracle_card_types')
     subtypes = relationship('CardSubtype', secondary='mtgoracle_card_subtypes')

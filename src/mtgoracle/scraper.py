@@ -139,8 +139,7 @@ def card_and_printing_from_span(cspan):
         suptypes = types
         subtypes = []
     if u'Legend' in subtypes:
-        i = subtypes.index(u'Legend')
-        subtypes.pop(i)
+        subtypes.remove(u'Legend')
         suptypes.append(u'Legendary')
     if u'(Loyalty:' in subtypes:
         i = subtypes.index(u'(Loyalty:')
@@ -148,6 +147,11 @@ def card_and_printing_from_span(cspan):
         subtypes = subtypes[:i]
     else:
         loyalty = None
+    if u'Legendary' in suptypes:
+        suptypes.remove(u'Legendary')
+        legendary = True
+    else:
+        legendary = False
     if costline == u'':
         cost, cmc = ('', 0)
     elif '(' in costline:
@@ -163,7 +167,8 @@ def card_and_printing_from_span(cspan):
             'subtypes': [unicode(t) for t in subtypes],
             'cost': unicode(cost),
             'cmc': cmc,
-            'loyalty': loyalty}
+            'loyalty': loyalty,
+            'legendary': legendary}
     return card, printing
 
 
