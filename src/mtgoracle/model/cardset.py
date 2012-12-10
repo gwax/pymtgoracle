@@ -18,7 +18,8 @@ class CardSet(DeclarativeBase):
 
     # {Special Methods
     def __repr__(self):
-        return ('<CardSet: %s: %s>' % (self.code, self.name)).encode('utf-8')
+        return ('<CardSet: %s - %s>' % (self.code.upper(), self.name)).\
+            encode('utf-8')
 
     def __unicode__(self):
         return unicode(self.code)
