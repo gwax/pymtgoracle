@@ -13,95 +13,7 @@
 :     rdf:type owl:Ontology ;
       owl:versionInfo "Created by George Waksman"^^xsd:string .
 
-:CardPrinting
-      rdf:type owl:Class ;
-      rdfs:subClassOf owl:Thing ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :artist
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :flavor
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :magicCard
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :set
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :setNumber
-              ] .
-
-:CardType
-      rdf:type owl:Class ;
-      rdfs:subClassOf :Type .
-
-:Creature
-      rdf:type owl:Class ;
-      rdfs:subClassOf :MagicCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :power
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :toughness
-              ] .
-
-:DoubleFacedCard
-      rdf:type owl:Class ;
-      rdfs:subClassOf :DualCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :frontFaceCard
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :rearFaceCard
-              ] .
-
-:DualCard
-      rdf:type owl:Class ;
-      rdfs:subClassOf :PrintedCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "2"^^xsd:nonNegativeInteger ;
-                owl:onProperty :magicCard
-              ] .
-
-:FlipCard
-      rdf:type owl:Class ;
-      rdfs:subClassOf :DualCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :rightsideupCard
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :upsidedownCard
-              ] .
-
-:Land
-      rdf:type owl:Class ;
-      rdfs:subClassOf :MagicCard .
-
-:MagicCard
+:Card
       rdf:type owl:Class ;
       rdfs:subClassOf owl:Thing ;
       rdfs:subClassOf
@@ -120,22 +32,149 @@
                 owl:onProperty :rules
               ] .
 
-:Planeswalker
-      rdf:type owl:Class ;
-      rdfs:subClassOf :MagicCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :loyalty
-              ] .
-
-:PrintedCard
+:CardPrinting
       rdf:type owl:Class ;
       rdfs:subClassOf owl:Thing ;
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
-                owl:minCardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :magicCard
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :artist
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :card
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :flavor
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :set
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :setNumber
+              ] .
+
+:CardType
+      rdf:type owl:Class ;
+      rdfs:subClassOf :Type .
+
+:Creature
+      rdf:type owl:Class ;
+      rdfs:subClassOf :Card ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :power
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :toughness
+              ] .
+
+:DoubleFacedCard
+      rdf:type owl:Class ;
+      rdfs:subClassOf :DualCard ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :frontCard
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :rearCard
+              ] .
+
+:DoubleFacedCardPrinting
+      rdf:type owl:Class ;
+      rdfs:subClassOf :DualCardPrinting ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :frontFlavor
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :rearFlavor
+              ] .
+
+:DualCard
+      rdf:type owl:Class ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "2"^^xsd:nonNegativeInteger ;
+                owl:onProperty :card
+              ] .
+
+:DualCardPrinting
+      rdf:type owl:Class ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :artist
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :dualCard
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:maxCardinality "2"^^xsd:nonNegativeInteger ;
+                owl:onProperty :flavor
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :set
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :setNumber
+              ] .
+
+:FlipCard
+      rdf:type owl:Class ;
+      rdfs:subClassOf :DualCard ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :rightsideupCard
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :upsidedownCard
+              ] .
+
+:FlipCardPrinting
+      rdf:type owl:Class ;
+      rdfs:subClassOf :DualCardPrinting ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "0"^^xsd:nonNegativeInteger ;
+                owl:onProperty :flavor
+              ] .
+
+:Planeswalker
+      rdf:type owl:Class ;
+      rdfs:subClassOf :Card ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :loyalty
               ] .
 
 :Set  rdf:type owl:Class ;
@@ -146,41 +185,32 @@
                 owl:onProperty :name
               ] .
 
-:SingleCard
-      rdf:type owl:Class ;
-      rdfs:subClassOf :PrintedCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :magicCard
-              ] .
-
-:Spell
-      rdf:type owl:Class ;
-      rdfs:subClassOf :MagicCard ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :cmc
-              ] ;
-      rdfs:subClassOf
-              [ rdf:type owl:Restriction ;
-                owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :cost
-              ] .
-
 :SplitCard
       rdf:type owl:Class ;
       rdfs:subClassOf :DualCard ;
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
                 owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :leftHalfCard
+                owl:onProperty :leftCard
               ] ;
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
                 owl:cardinality "1"^^xsd:nonNegativeInteger ;
-                owl:onProperty :rightHalfCard
+                owl:onProperty :rightCard
+              ] .
+
+:SplitCardPrinting
+      rdf:type owl:Class ;
+      rdfs:subClassOf :DualCardPrinting ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :leftFlavor
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :rightFlavor
               ] .
 
 :Subtype
@@ -204,6 +234,10 @@
       rdf:type owl:DatatypeProperty ;
       rdfs:domain :CardPrinting ;
       rdfs:range xsd:string .
+
+:card
+      rdf:type owl:ObjectProperty ;
+      rdfs:range :Card .
 
 type:Artifact
       rdf:type :CardType ;
@@ -254,41 +288,49 @@ type:Vanguard
       :identifier "Vanguard"^^xsd:string .
 
 :cmc  rdf:type owl:DatatypeProperty ;
-      rdfs:domain :Spell ;
       rdfs:range xsd:integer .
 
 :cost
       rdf:type owl:DatatypeProperty ;
-      rdfs:domain :Spell ;
       rdfs:range xsd:string .
+
+:dualCard
+      rdf:type owl:ObjectProperty ;
+      rdfs:range :DualCard .
 
 :flavor
       rdf:type owl:DatatypeProperty ;
       rdfs:domain :CardPrinting ;
       rdfs:range xsd:string .
 
-:frontFaceCard
+:frontCard
       rdf:type owl:ObjectProperty ;
       rdfs:domain :DoubleFacedCard ;
-      rdfs:subPropertyOf :magicCard .
+      rdfs:subPropertyOf :card .
+
+:frontFlavor
+      rdf:type owl:DatatypeProperty ;
+      rdfs:domain :DoubleFacedCardPrinting ;
+      rdfs:subPropertyOf :flavor .
 
 :identifier
       rdf:type owl:DatatypeProperty ;
       rdfs:range xsd:string .
 
-:leftHalfCard
+:leftCard
       rdf:type owl:ObjectProperty ;
       rdfs:domain :SplitCard ;
-      rdfs:subPropertyOf :magicCard .
+      rdfs:subPropertyOf :card .
+
+:leftFlavor
+      rdf:type owl:DatatypeProperty ;
+      rdfs:domain :SplitCardPrinting ;
+      rdfs:subPropertyOf :flavor .
 
 :loyalty
       rdf:type owl:DatatypeProperty ;
       rdfs:domain :Planeswalker ;
       rdfs:range xsd:integer .
-
-:magicCard
-      rdf:type owl:ObjectProperty ;
-      rdfs:range :MagicCard .
 
 :name
       rdf:type owl:DatatypeProperty ;
@@ -303,36 +345,40 @@ type:Vanguard
                 owl:unionOf (xsd:integer xsd:string)
               ] .
 
-:printedCard
-      rdf:type owl:ObjectProperty ;
-      rdfs:range :PrintedCard .
-
-:rearFaceCard
+:rearCard
       rdf:type owl:ObjectProperty ;
       rdfs:domain :DoubleFacedCard ;
-      rdfs:subPropertyOf :magicCard .
+      rdfs:subPropertyOf :card .
 
-:rightHalfCard
+:rearFlavor
+      rdf:type owl:DatatypeProperty ;
+      rdfs:domain :DoubleFacedCardPrinting ;
+      rdfs:subPropertyOf :flavor .
+
+:rightCard
       rdf:type owl:ObjectProperty ;
       rdfs:domain :SplitCard ;
-      rdfs:subPropertyOf :magicCard .
+      rdfs:subPropertyOf :card .
+
+:rightFlavor
+      rdf:type owl:DatatypeProperty ;
+      rdfs:domain :SplitCardPrinting ;
+      rdfs:subPropertyOf :flavor .
 
 :rightsideupCard
       rdf:type owl:ObjectProperty ;
       rdfs:domain :FlipCard ;
-      rdfs:subPropertyOf :magicCard .
+      rdfs:subPropertyOf :card .
 
 :rules
-      rdf:type owl:DatatypeProperty ;
-      rdfs:domain :MagicCard ;
-      rdfs:range rdf:List .
+      rdf:type owl:ObjectProperty ;
+      rdfs:range rdf:Bag .
 
 :set  rdf:type owl:ObjectProperty ;
       rdfs:range :Set .
 
 :setNumber
       rdf:type owl:DatatypeProperty ;
-      rdfs:domain :CardPrinting ;
       rdfs:range
               [ rdf:type owl:Class ;
                 owl:unionOf (xsd:integer xsd:string)
@@ -368,10 +414,10 @@ supertype:World
 
 :type
       rdf:type owl:ObjectProperty ;
-      rdfs:domain :MagicCard ;
+      rdfs:domain :Card ;
       rdfs:range :Type .
 
 :upsidedownCard
       rdf:type owl:ObjectProperty ;
       rdfs:domain :FlipCard ;
-      rdfs:subPropertyOf :magicCard .
+      rdfs:subPropertyOf :card .
