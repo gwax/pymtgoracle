@@ -1,5 +1,5 @@
 mtgstore/
-output.ttl
+scraping-*.ttl
 
 *.py[co]
 

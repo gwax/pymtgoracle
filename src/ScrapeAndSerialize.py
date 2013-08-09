@@ -5,16 +5,17 @@ Created on Aug 9, 2013
 '''
 
 from mtgoracle.rdf.prefix import RDF, ORACLE, MTGSET, nsdict, MAGICCARDSINFO, \
-    XSD, MTGBLOCK
+    XSD, MTGBLOCK, OWL
 from mtgoracle.rdf.store import PersistentStore
 from mtgoracle.scraper import scrape_setdicts
 from rdflib import Literal, URIRef
+from datetime import datetime
 import os.path
 from mtgoracle.rdf import quote_name
 
 
 RESET_PERSISTENCE = True
-OUTFILE = os.path.join('.', 'output.ttl')
+OUTPATH = '.'
 
 
 def main():
@@ -37,8 +38,14 @@ def main():
             setgraph.add((seturi, ORACLE.name, Literal(setdict['name'], datatype=XSD.string)))
             setgraph.add((seturi, MAGICCARDSINFO.enlink, URIRef(setdict['link'])))
             setgraph.add((seturi, ORACLE.block, blockuri))
+        print 'Adding scraping info'
+        scrapestr = 'scraping-' + datetime.now().strftime('%Y%m%d')
+        scrapinguri = ORACLE[scrapestr]
+        graph.add((scrapinguri, RDF.type, OWL.Ontology))
+        graph.add((scrapinguri, OWL.imports, ORACLE['']))
         print 'Serializing output'
-        graph.serialize(destination=OUTFILE, format='turtle')
+        outfile = os.path.join(OUTPATH, scrapestr+'.ttl')
+        graph.serialize(destination=outfile, format='turtle')
         print 'Done'
 
 if __name__ == '__main__':
