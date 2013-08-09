@@ -1,6 +1,4 @@
 from BeautifulSoup import BeautifulSoup, NavigableString
-from mtgoracle.model import Card, CardSet, CardPrinting, DBSession, CardType, \
-    CardSubtype
 from urllib import urlencode
 import os.path
 import requests
