@@ -1,3 +1,6 @@
+mtgstore/
+output.ttl
+
 *.py[co]
 
 # Packages

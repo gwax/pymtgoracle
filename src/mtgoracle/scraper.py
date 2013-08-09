@@ -72,7 +72,7 @@ def setdict_from_setlink(setlink):
     setdict = {
         'name': setlink.text,
         'code': setlink.parent.find('small').text,
-        'link': setlink['href']}
+        'link': URL_BASE + setlink['href']}
     blockli = setlink.findParents('li')[-1]
     setdict['block'] = blockli.contents[0]
     return setdict

@@ -1,17 +1,32 @@
 # baseURI: http://www.gwax.com/oracle/
 
 @prefix :        <http://www.gwax.com/oracle/> .
-@prefix card:    <http://gatherer.wizards.com/Pages/Card/Details.aspx?name=> .
+@prefix block:   <http://www.gwax.com/oracle/cardblock#> .
+@prefix magiccardsinfo:  <http://magiccards.info/> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix set:     <http://www.gwax.com/oracle/cardset#> .
 @prefix subtype:  <http://www.gwax.com/oracle/subtype#> .
 @prefix supertype:  <http://www.gwax.com/oracle/supertype#> .
 @prefix type:    <http://www.gwax.com/oracle/cardtype#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 
+magiccardsinfo:enlink
+      rdf:type owl:DatatypeProperty ;
+      rdfs:range xsd:string .
+
 :     rdf:type owl:Ontology ;
       owl:versionInfo "Created by George Waksman"^^xsd:string .
+
+:Block
+      rdf:type owl:Class ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :name
+              ] .
 
 :Card
       rdf:type owl:Class ;
@@ -181,6 +196,11 @@
       rdfs:subClassOf owl:Thing ;
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
+                owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :block
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
                 owl:cardinality "1"^^xsd:nonNegativeInteger ;
                 owl:onProperty :name
               ] .
@@ -234,6 +254,10 @@
       rdf:type owl:DatatypeProperty ;
       rdfs:domain :CardPrinting ;
       rdfs:range xsd:string .
+
+:block
+      rdf:type owl:ObjectProperty ;
+      rdfs:range :Block .
 
 :card
       rdf:type owl:ObjectProperty ;
