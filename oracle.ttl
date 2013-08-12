@@ -6,6 +6,7 @@
 @prefix magiccardsinfo:  <http://magiccards.info/> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix print:   <http://www.gwax.com/oracle/cardprint#> .
+@prefix rarity:  <http://www.gwax.com/oracle/cardrarity#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix set:     <http://www.gwax.com/oracle/cardset#> .
@@ -71,6 +72,11 @@ magiccardsinfo:setcode
               [ rdf:type owl:Restriction ;
                 owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
                 owl:onProperty :flavor
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :rarity
               ] ;
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
@@ -159,6 +165,11 @@ magiccardsinfo:setcode
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
                 owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :rarity
+              ] ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
                 owl:onProperty :set
               ] ;
       rdfs:subClassOf
@@ -197,6 +208,15 @@ magiccardsinfo:setcode
               [ rdf:type owl:Restriction ;
                 owl:cardinality "1"^^xsd:nonNegativeInteger ;
                 owl:onProperty :loyalty
+              ] .
+
+:Rarity
+      rdf:type owl:Class ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:subClassOf
+              [ rdf:type owl:Restriction ;
+                owl:cardinality "1"^^xsd:nonNegativeInteger ;
+                owl:onProperty :identifier
               ] .
 
 :Set  rdf:type owl:Class ;
@@ -270,8 +290,14 @@ magiccardsinfo:setcode
       rdf:type owl:ObjectProperty ;
       rdfs:range :Card .
 
+rarity:Common
+      rdf:type :Rarity ;
+      rdfs:label "Common"^^xsd:string ;
+      :identifier "Common"^^xsd:string .
+
 type:Artifact
       rdf:type :CardType ;
+      rdfs:label "Artifact"^^xsd:string ;
       :identifier "Artifact"^^xsd:string .
 
 type:Creature
@@ -375,6 +401,10 @@ type:Vanguard
               [ rdf:type owl:Class ;
                 owl:unionOf (xsd:integer xsd:string)
               ] .
+
+:rarity
+      rdf:type owl:ObjectProperty ;
+      rdfs:range :Rarity .
 
 :rearCard
       rdf:type owl:ObjectProperty ;
