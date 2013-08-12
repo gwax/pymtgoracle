@@ -1,4 +1,4 @@
-from BeautifulSoup import BeautifulSoup, NavigableString
+from BeautifulSoup import BeautifulSoup, NavigableString, Tag
 from urllib import urlencode
 import os.path
 import requests
@@ -76,37 +76,39 @@ def setdict_from_setlink(setlink):
     return setdict
 
 
-def cardandprints_from_setcode(setcode):
+def scrape_printdicts(setcode):
     querymap = {'q': '++e:' + setcode + '/en',
                 'v': 'spoiler',
                 's': 'issue'}
     spoilerlink = '/query?' + urlencode(querymap)
     req = requests.get(URL_BASE + spoilerlink)
     soup = BeautifulSoup(req.content)
-    cspans = soup.findAll('span')
-    return [card_and_printing_from_span(csp) for csp in cspans]
+    pspans = soup.findAll('span')
+    return [printdict_from_printspan_and_setcode(psp, setcode) for psp in pspans]
 
 
-def card_and_printing_from_span(cspan):
-    name = cspan.text
-    cardlink = cspan.find('a')['href']
+def printdict_from_printspan_and_setcode(pspan, setcode):
+    name = pspan.text
+    cardlink = URL_BASE + pspan.find('a')['href']
     numstr = cardlink.split('/')[-1].replace('.html', '')
     if numstr[-1] in string.lowercase:
         variant = string.lowercase.index(numstr[-1])
         numstr = numstr[:-1]
     else:
         variant = -1
-    rulesline = cspan.findNextSibling('p', {'class': 'ctext'})
+    rulesline = pspan.findNextSibling('p', {'class': 'ctext'})
     typecostline = rulesline.findPreviousSibling('p')
     rarityline = typecostline.findPreviousSibling('p')
     flavorline = rulesline.findNextSibling('p')
+    flavor = ['\n' if isinstance(f, Tag) and f.name == 'br' else f for f in flavorline.findAll('i')[0].contents]
     artline = flavorline.findNextSibling('p')
-    printing = {'link': cardlink,
+    printing = {'setcode': setcode,
+            'link': cardlink,
             'number': int(numstr),
             'variant': variant,
             'rarity': unicode(rarityline.findNext('i').text) if
                                 rarityline else u'Special',
-            'flavor': unicode(flavorline.text),
+            'flavor': u''.join(flavor) if len(flavor)>0 else None,
             'artist': unicode(artline.text).replace('Illus. ', '')}
     rules = [rl for rl in rulesline.find('b').contents if
              isinstance(rl, NavigableString)]
@@ -114,6 +116,14 @@ def card_and_printing_from_span(cspan):
     types = typeline.split()
     if '/' in types[-1]:
         powr, tgh = types[-1].split('/')
+        try:
+            powr = int(powr)
+        except ValueError:
+            pass
+        try:
+            tgh = int(tgh)
+        except ValueError:
+            pass
         types = types[:-1]
     else:
         powr, tgh = None, None
@@ -145,11 +155,6 @@ def card_and_printing_from_span(cspan):
         subtypes = subtypes[:i]
     else:
         loyalty = None
-    if u'Legendary' in suptypes:
-        suptypes.remove(u'Legendary')
-        legendary = True
-    else:
-        legendary = False
     if costline == u'':
         cost, cmc = ('', 0)
     elif '(' in costline:
@@ -158,16 +163,16 @@ def card_and_printing_from_span(cspan):
     else:
         cost, cmc = (costline, 0)
     card = {'name': unicode(name),
-            'rules': unicode('\n'.join(rules)),
-            'power': unicode(powr) if powr is not None else None,
-            'toughness': unicode(tgh) if tgh is not None else None,
+            'rules': [unicode(r) for r in rules],
+            'power': powr,
+            'toughness': tgh,
             'types': [unicode(t) for t in suptypes],
             'subtypes': [unicode(t) for t in subtypes],
             'cost': unicode(cost),
             'cmc': cmc,
-            'loyalty': loyalty,
-            'legendary': legendary}
-    return card, printing
+            'loyalty': loyalty}
+    printing.update(card)
+    return printing
 
 
 if __name__ == '__main__':

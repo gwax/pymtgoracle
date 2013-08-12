@@ -2,8 +2,10 @@
 
 @prefix :        <http://www.gwax.com/oracle/> .
 @prefix block:   <http://www.gwax.com/oracle/cardblock#> .
+@prefix card:    <http://www.gwax.com/oracle/cardname#> .
 @prefix magiccardsinfo:  <http://magiccards.info/> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix print:   <http://www.gwax.com/oracle/cardprint#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix set:     <http://www.gwax.com/oracle/cardset#> .
@@ -14,6 +16,11 @@
 
 magiccardsinfo:enlink
       rdf:type owl:DatatypeProperty ;
+      rdfs:range xsd:string .
+
+magiccardsinfo:setcode
+      rdf:type owl:DatatypeProperty ;
+      rdfs:domain :Set ;
       rdfs:range xsd:string .
 
 :     rdf:type owl:Ontology ;
@@ -403,10 +410,7 @@ type:Vanguard
 
 :setNumber
       rdf:type owl:DatatypeProperty ;
-      rdfs:range
-              [ rdf:type owl:Class ;
-                owl:unionOf (xsd:integer xsd:string)
-              ] .
+      rdfs:range xsd:integer .
 
 supertype:Basic
       rdf:type :Supertype ;
