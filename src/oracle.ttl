@@ -3,7 +3,7 @@
 @prefix :        <http://www.gwax.com/oracle/> .
 @prefix block:   <http://www.gwax.com/oracle/cardblock#> .
 @prefix card:    <http://www.gwax.com/oracle/cardname#> .
-@prefix magiccardsinfo:  <http://magiccards.info/> .
+@prefix magiccardsinfo:  <http://www.magiccards.info/> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix print:   <http://www.gwax.com/oracle/cardprint#> .
 @prefix rarity:  <http://www.gwax.com/oracle/cardrarity#> .
@@ -14,15 +14,6 @@
 @prefix supertype:  <http://www.gwax.com/oracle/supertype#> .
 @prefix type:    <http://www.gwax.com/oracle/cardtype#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
-
-magiccardsinfo:enlink
-      rdf:type owl:DatatypeProperty ;
-      rdfs:range xsd:string .
-
-magiccardsinfo:setcode
-      rdf:type owl:DatatypeProperty ;
-      rdfs:domain :Set ;
-      rdfs:range xsd:string .
 
 :     rdf:type owl:Ontology ;
       owl:versionInfo "Created by George Waksman"^^xsd:string .
@@ -220,7 +211,7 @@ magiccardsinfo:setcode
               ] .
 
 :Set  rdf:type owl:Class ;
-      rdfs:subClassOf owl:Thing ;
+      rdfs:subClassOf rdf:Seq , owl:Thing ;
       rdfs:subClassOf
               [ rdf:type owl:Restriction ;
                 owl:maxCardinality "1"^^xsd:nonNegativeInteger ;
@@ -479,3 +470,12 @@ supertype:World
       rdf:type owl:ObjectProperty ;
       rdfs:domain :FlipCard ;
       rdfs:subPropertyOf :card .
+
+magiccardsinfo:enlink
+      rdf:type owl:DatatypeProperty ;
+      rdfs:range xsd:string .
+
+magiccardsinfo:setcode
+      rdf:type owl:DatatypeProperty ;
+      rdfs:domain :Set ;
+      rdfs:range xsd:string .

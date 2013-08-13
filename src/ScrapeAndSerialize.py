@@ -16,6 +16,7 @@ from mtgoracle.rdf import quote_name
 
 RESET_PERSISTENCE = True
 OUTPATH = '.'
+ONTOPATH = os.path.join(os.path.dirname(__file__), 'oracle.ttl')
 
 
 def rdfify_set(setdict, setgraph, blockgraph):
@@ -37,7 +38,7 @@ def rdfify_set(setdict, setgraph, blockgraph):
     return seturi
 
 
-def rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, seturi):
+def rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, ontograph, seturi):
     print printdict
     carduri = MTGCARD[quote_name(printdict['name'])]
     if (carduri, RDF.type, ORACLE.Card) not in cardgraph:
@@ -70,7 +71,10 @@ def rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, seturi):
         if printdict['loyalty'] is not None:
             cardgraph.add((carduri, ORACLE.loyalty, Literal(printdict['loyalty'], datatype=XSD.integer)))
         for typ in printdict['types']:
-            pass  # hmm???? inferencing???
+            typlit = Literal(typ, datatype=XSD.string)
+            for subj in ontograph[:ORACLE.identifier:typlit]:
+                if (subj, RDF.type, ORACLE.Type) in ontograph:
+                    cardgraph.add((carduri, ORACLE.type, subj))
         for subtype in printdict['subtypes']:
             suburi = MTGSUBTYPE[subtype]
             if (suburi, RDF.type, ORACLE.Subtype) not in subtypegraph:
@@ -79,12 +83,13 @@ def rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, seturi):
                 subtypegraph.add((suburi, RDFS.label, sublit))
                 subtypegraph.add((suburi, ORACLE.identifier, sublit))
             cardgraph.add((carduri, ORACLE.type, suburi))
-    printuri = MTGPRINT[quote_name(printdict['setcode'] + '_' + str(printdict['number']))]
+    printuri = MTGPRINT[quote_name(printdict['setcode'] + '_' + str(printdict['number']) + '_' + printdict['name'])]
     if (printuri, RDF.type, ORACLE.CardPrinting) not in printgraph:
         printgraph.add((printuri, RDF.type, ORACLE.CardPrinting))
         printgraph.add((printuri, ORACLE.card, carduri))
         printgraph.add((printuri, ORACLE.set, seturi))
         printgraph.add((printuri, ORACLE.setNumber, Literal(printdict['number'], datatype=XSD.integer)))
+        printgraph.add((seturi, RDF['_' + str(printdict['number'])], printuri))
         printgraph.add((printuri, ORACLE.artist, Literal(printdict['artist'], datatype=XSD.string)))
         printgraph.add((printuri, ORACLE.rarity, MTGRARITY[printdict['rarity']]))
         printgraph.add((printuri, MAGICCARDSINFO.enlink, URIRef(printdict['link'])))
@@ -93,9 +98,26 @@ def rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, seturi):
     return printuri
 
 
+def partial_inference(ontograph):
+    for subc in ontograph[:RDFS.subClassOf:ORACLE.Type]:
+        for subj in ontograph[:RDF.type:subc]:
+            ontograph.add((subj, RDF.type, ORACLE.Type))
+
+
 def main():
     with PersistentStore(wipe=RESET_PERSISTENCE) as store:
         graph = store.conjunctive_graph()
+        print 'Adding scraping info'
+        scrapestr = 'scraping-' + datetime.now().strftime('%Y%m%d')
+        scrapeuri = ORACLE[scrapestr]
+        graph.bind('', scrapeuri + '#')
+        graph.add((scrapeuri, RDF.type, OWL.Ontology))
+        graph.add((scrapeuri, OWL.imports, ORACLE['']))
+        graph.add((scrapeuri, OWL.versionInfo, Literal('Created with pymtgoracle', datatype=XSD.string)))
+        print 'Parsing ontology'
+        ontograph = store.context_graph(ORACLE.graph)
+        ontograph.parse(ONTOPATH, format='turtle')
+        partial_inference(ontograph)
         print 'Setting up namespaces'
         for name, ns in nsdict.iteritems():
             graph.bind(name, ns)
@@ -107,15 +129,11 @@ def main():
         subtypegraph = store.context_graph(MTGSUBTYPE.graph)
         for setdict in scrape_setdicts()[:1]:
             seturi = rdfify_set(setdict, setgraph, blockgraph)
-            for printdict in scrape_printdicts(setdict['code'])[:5]:
-                printuri = rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, seturi)
-        print 'Adding scraping info'
-        scrapestr = 'scraping-' + datetime.now().strftime('%Y%m%d')
-        scrapeuri = ORACLE[scrapestr]
-        graph.bind('', scrapeuri + '#')
-        graph.add((scrapeuri, RDF.type, OWL.Ontology))
-        graph.add((scrapeuri, OWL.imports, ORACLE['']))
-        graph.add((scrapeuri, OWL.versionInfo, Literal('Created with pymtgoracle', datatype=XSD.string)))
+            for printdict in scrape_printdicts(setdict['code'])[:20]:
+                printuri = rdfify_printing(printdict, printgraph, cardgraph, subtypegraph, ontograph, seturi)
+        print 'Stripping ontology'
+        for s, p, o in ontograph:
+            ontograph.remove((s, p, o))
         print 'Serializing output'
         outfile = os.path.join(OUTPATH, scrapestr + '.ttl')
         graph.serialize(destination=outfile, format='turtle')

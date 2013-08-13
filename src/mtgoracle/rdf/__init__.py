@@ -9,4 +9,4 @@ def quote_name(name):
     name = unicode(name)
     for old, new in replacements:
         name = name.replace(old, new)
-    return quote(name)
+    return quote(name.encode('utf-8'))
