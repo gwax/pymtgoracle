@@ -92,7 +92,7 @@ def printdict_from_printspan_and_setcode(pspan, setcode):
     cardlink = URL_BASE + pspan.find('a')['href']
     numstr = cardlink.split('/')[-1].replace('.html', '')
     if numstr[-1] in string.lowercase:
-        variant = string.lowercase.index(numstr[-1])
+        variant = string.lowercase.index(numstr[-1]) + 1
         numstr = numstr[:-1]
     else:
         variant = -1
@@ -108,7 +108,7 @@ def printdict_from_printspan_and_setcode(pspan, setcode):
             'variant': variant,
             'rarity': unicode(rarityline.findNext('i').text) if
                                 rarityline else u'Special',
-            'flavor': u''.join(flavor) if len(flavor)>0 else None,
+            'flavor': u''.join(flavor) if len(flavor) > 0 else None,
             'artist': unicode(artline.text).replace('Illus. ', '')}
     rules = [rl for rl in rulesline.find('b').contents if
              isinstance(rl, NavigableString)]

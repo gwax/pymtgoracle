@@ -15,9 +15,8 @@ MAGICCARDSINFO = Namespace('http://www.magiccards.info/')
 MTGSUBTYPE = Namespace('http://www.gwax.com/oracle/subtype#')
 MTGSUPERTYPE = Namespace('http://www.gwax.com/oracle/supertype#')
 MTGTYPE = Namespace('http://www.gwax.com/oracle/cardtype#')
-MTGSET = Namespace('http://www.gwax.com/oracle/cardset#')
+MTGSET = Namespace('http://www.gwax.com/oracle/cardset/')
 MTGCARD = Namespace('http://www.gwax.com/oracle/cardname#')
-MTGPRINT = Namespace('http://www.gwax.com/oracle/cardprint#')
 MTGBLOCK = Namespace('http://www.gwax.com/oracle/cardblock#')
 MTGRARITY = Namespace('http://www.gwax.com/oracle/cardrarity#')
 XSD = Namespace('http://www.w3.org/2001/XMLSchema#')
@@ -33,6 +32,5 @@ nsdict = {'oracle': ORACLE,
           'set': MTGSET,
           'block': MTGBLOCK,
           'card': MTGCARD,
-          'print': MTGPRINT,
           'rarity': MTGRARITY,
           'xsd': XSD}
